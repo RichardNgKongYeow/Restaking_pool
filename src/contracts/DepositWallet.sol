@@ -1,7 +1,7 @@
 pragma solidity ^0.8.0;
 
-import "./PeceiptToken.sol";
-import "./TetherToken.sol";
+import "./PurseTokenUpgradeable.sol";
+import "./UniPunLP.sol";
 import "./Ownable.sol";
 import "./CheckContract.sol";
 
@@ -20,8 +20,8 @@ contract DepositWallet is CheckContract, Ownable{
 
 
     // ---Smart Contracts---
-    PeceiptToken public peceiptToken;
-    TetherToken public tetherToken;
+    PurseTokenUpgradeable public purseTokenUpgradeable;
+    UniPunLP public uniPunLP;
 
 
     // --- Pool Events ---
@@ -70,11 +70,11 @@ contract DepositWallet is CheckContract, Ownable{
 
 
     // TODO mint and burn PFX or just set it to a lot from the start?
-    // constructor(PeceiptToken(type ie smart contract type ie PeceiptToken(sol)) _peceiptToken(address))
+    // constructor(UniPunLP(type ie smart contract type ie UniPunLP(sol)) _uniPunLP(address))
     // TODO can just change the contract add of tethertoken here
-    constructor(PeceiptToken _peceiptToken, TetherToken _tetherToken) public {
-        peceiptToken=_peceiptToken;
-        tetherToken=_tetherToken;
+    constructor(UniPunLP _uniPunLP, PurseTokenUpgradeable _purseTokenUpgradeable) public {
+        uniPunLP=_uniPunLP;
+        purseTokenUpgradeable=_purseTokenUpgradeable;
         ownerAdd=msg.sender;
     }
 
@@ -105,8 +105,8 @@ contract DepositWallet is CheckContract, Ownable{
     function stakeTokens(uint _amount) public amountGT0(_amount) {
         
         
-        // Transfer TetherTokens to this contract for staking
-        tetherToken.transferFrom(msg.sender, address(this), _amount);
+        // Transfer PurseTokenUpgradeables to this contract for staking
+        purseTokenUpgradeable.transferFrom(msg.sender, address(this), _amount);
         
         // starting the pool
         uint shareofpool;
@@ -118,7 +118,7 @@ contract DepositWallet is CheckContract, Ownable{
         }
 
         // transfer lp token to person and update PFXpool
-        peceiptToken.transfer(msg.sender, shareofpool);
+        uniPunLP.transfer(msg.sender, shareofpool);
         addToPFXincirculation(shareofpool);
         emit Staked(msg.sender, _amount, shareofpool, block.timestamp);
 
@@ -139,8 +139,8 @@ contract DepositWallet is CheckContract, Ownable{
         uint256 shareofpool=(_amount*mUSDTtoPFX)/(10**18);
 
         // transfer lp Tokens back to this contract for staking
-        peceiptToken.transferFrom(msg.sender, address(this), _amount);
-        tetherToken.transfer(msg.sender, shareofpool);
+        uniPunLP.transferFrom(msg.sender, address(this), _amount);
+        purseTokenUpgradeable.transfer(msg.sender, shareofpool);
 
         // update pool info
         deductFrommUSDTpool(shareofpool);
@@ -151,7 +151,7 @@ contract DepositWallet is CheckContract, Ownable{
 
     // ---OnlyOwner Functions---
     function withdrawTetherFromPool (uint _amount) public amountGT0(_amount) onlyOwner{
-        tetherToken.transfer(msg.sender, _amount);
+        purseTokenUpgradeable.transfer(msg.sender, _amount);
         deductFrommUSDTpool(_amount);
         updatemUSDTtoPFX();
         updatePFXtomUSDT();
@@ -159,7 +159,7 @@ contract DepositWallet is CheckContract, Ownable{
     }
 
     function addTetherToPool (uint _amount) public amountGT0(_amount) onlyOwner{
-        tetherToken.transferFrom(msg.sender,address(this), _amount);
+        purseTokenUpgradeable.transferFrom(msg.sender,address(this), _amount);
         addTomUSDTpool(_amount);
         updatemUSDTtoPFX();
         updatePFXtomUSDT();
@@ -176,7 +176,7 @@ contract DepositWallet is CheckContract, Ownable{
     }
     function withdrawTetherFromFees (uint _amount) public amountGT0(_amount) onlyOwner {
 
-        tetherToken.transfer(msg.sender, _amount);
+        purseTokenUpgradeable.transfer(msg.sender, _amount);
         deductFrommUSDTfees(_amount);
         updatemUSDTtoPFX();
         updatePFXtomUSDT();
