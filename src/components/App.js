@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
-import TetherToken from '../abis/TetherToken.json'
-import PeceiptToken from '../abis/PeceiptToken.json'
-import DepositWallet from '../abis/DepositWallet.json'
+import UniToken from '../abis/UniToken.json'
+import PurseTokenUpgradable from '../abis/PurseTokenUpgradable.json'
+import RestakingFarm from '../abis/RestakingFarm.json'
 import Navbar from './Navbar'
 import Main from './Main'
-import Stake from './Stake'
-import Unstake from './Unstake'
+import Deposit from './Deposit'
+import Withdraw from './Withdraw'
 import Owner from './Owner'
 import './App.css'
 import { BrowserRouter as Router,Switch, Route} from 'react-router-dom';
@@ -27,53 +27,58 @@ class App extends Component {
 
     const networkId = await web3.eth.net.getId()
 
-    // Load tetherToken
+    // Load uniToken
 
-    const tetherTokenData = TetherToken.networks[networkId]
-    if(tetherTokenData) {
-      const tetherToken = new web3.eth.Contract(TetherToken.abi, tetherTokenData.address)
-      this.setState({ tetherToken })
-      let tetherTokenBalance = await tetherToken.methods.balanceOf(this.state.account).call()
-      this.setState({ tetherTokenBalance: tetherTokenBalance.toString() })
+    const uniTokenData = UniToken.networks[networkId]
+    if(uniTokenData) {
+      const uniToken = new web3.eth.Contract(UniToken.abi, uniTokenData.address)
+      this.setState({ uniToken })
+      let uniTokenBalance = await uniToken.methods.balanceOf(this.state.account).call()
+      this.setState({ uniTokenBalance: uniTokenBalance.toString() })
     } else {
-      window.alert('TetherToken contract not deployed to detected network.')
+      window.alert('UniToken contract not deployed to detected network.')
     }
 
-    // Load PeceiptToken
-    const peceiptTokenData = PeceiptToken.networks[networkId]
-    if(peceiptTokenData) {
-      const peceiptToken = new web3.eth.Contract(PeceiptToken.abi, peceiptTokenData.address)
-      this.setState({ peceiptToken })
-      let peceiptTokenBalance = await peceiptToken.methods.balanceOf(this.state.account).call()
-      this.setState({ peceiptTokenBalance: peceiptTokenBalance.toString() })
+    // Load PurseTokenUpgradable
+    const purseTokenUpgradableData = PurseTokenUpgradable.networks[networkId]
+    if(purseTokenUpgradableData) {
+      const purseTokenUpgradable = new web3.eth.Contract(PurseTokenUpgradable.abi, purseTokenUpgradableData.address)
+      this.setState({ purseTokenUpgradable })
+      let purseTokenUpgradableBalance = await purseTokenUpgradable.methods.balanceOf(this.state.account).call()
+      this.setState({ purseTokenUpgradableBalance: purseTokenUpgradableBalance.toString() })
     } else {
-      window.alert('PeceiptToken contract not deployed to detected network.')
+      window.alert('PurseTokenUpgradable contract not deployed to detected network.')
     }
 
-    // Load DepositWallet
-    const depositWalletData = DepositWallet.networks[networkId]
-    if(depositWalletData) {
-      const tetherToken = new web3.eth.Contract(TetherToken.abi, tetherTokenData.address)
-      const depositWallet = new web3.eth.Contract(DepositWallet.abi, depositWalletData.address)
-      this.setState({ depositWallet })
-      console.log(depositWallet)
+    // Load RestakingFarm
+    const restakingFarmData = RestakingFarm.networks[networkId]
+    if(restakingFarmData) {
+      const uniToken = new web3.eth.Contract(UniToken.abi, uniTokenData.address)
+      const purseTokenUpgradable = new web3.eth.Contract(PurseTokenUpgradable.abi, purseTokenUpgradableData.address)
+      const restakingFarm = new web3.eth.Contract(RestakingFarm.abi, restakingFarmData.address)
+      this.setState({ restakingFarm })
+      console.log(restakingFarm)
 
-      let tetherTokenInContract = await tetherToken.methods.balanceOf(depositWalletData.address).call()
-      let mUSDTpool=await depositWallet.methods.mUSDTpool().call()
-      let mUSDTfees=await depositWallet.methods.mUSDTfees().call()
-      let PFXincirculation= await depositWallet.methods.PFXincirculation().call()
-      let mUSDTtoPFX= await depositWallet.methods.mUSDTtoPFX().call()
-      let PFXtomUSDT= await depositWallet.methods.PFXtomUSDT().call()
-      let stakingFee= await depositWallet.methods.stakingFee().call()
-      this.setState({ tetherTokenInContract })
-      this.setState({ mUSDTpool})
-      this.setState({ mUSDTfees})
-      this.setState({ PFXincirculation})
-      this.setState({ mUSDTtoPFX})
-      this.setState({ PFXtomUSDT})
-      this.setState({ stakingFee})
+      let uniTokenInContract = await uniToken.methods.balanceOf(restakingFarmData.address).call()
+      let purseTokenUpgradableInContract = await purseTokenUpgradable.methods.balanceOf(restakingFarmData.address).call()
+      this.setState({ uniTokenInContract })
+      this.setState({ purseTokenUpgradableInContract })
+
+      let userInfo = await restakingFarm.methods.userInfo(this.state.account).call()
+      this.setState({ userInfo })
+      console.log({ userInfo: userInfo })
+
+      let poolInfo = await restakingFarm.methods.poolInfo().call()
+      this.setState({ poolInfo })
+      console.log({ poolInfo: poolInfo })
+      
+      let pursePerBlock= await restakingFarm.methods.pursePerBlock().call()
+      let startBlock= await restakingFarm.methods.startBlock().call()
+      this.setState({ pursePerBlock})
+      this.setState({ startBlock})
+
     } else {
-      window.alert('DepositWallet contract not deployed to detected network.')
+      window.alert('RestakingFarm contract not deployed to detected network.')
     }
 
     this.setState({ loading: false })
@@ -92,75 +97,43 @@ class App extends Component {
     }
   }
 
-  stakeTokens = (amount) => {
+  deposit = (amount) => {
     this.setState({ loading: true })
-    this.state.tetherToken.methods.approve(this.state.depositWallet._address, amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-      this.state.depositWallet.methods.stakeTokens(amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
+    this.state.uniToken.methods.approve(this.state.restakingFarm._address, amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
+      this.state.restakingFarm.methods.deposit(amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
         this.setState({ loading: false })
       })
     })
   }
 
-  unstakeTokens = (amount) => {
-    this.setState({ loading: true })
-    this.state.peceiptToken.methods.approve(this.state.depositWallet._address, amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-      this.state.depositWallet.methods.unstakeTokens(amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-        this.setState({ loading: false })
 
-      })
-    })
-  }
-
-  withdrawTetherFromPool = (amount) => {
+  withdraw = (amount) => {
     this.setState({ loading: true })
-    this.state.depositWallet.methods.withdrawTetherFromPool(amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
+    this.state.restakingFarm.methods.withdraw(amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
       this.setState({ loading: false })
 
       })
   
   }
-  addTetherToPool = (amount) => {
-    this.setState({ loading: true })
-    this.state.tetherToken.methods.approve(this.state.depositWallet._address, amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-    this.state.depositWallet.methods.addTetherToPool(amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-      this.setState({ loading: false })
 
-      })
-    })
-  }
-  transferTetherFromFeesToPool = (amount) => {
-    this.setState({ loading: true })
-    this.state.depositWallet.methods.transferTetherFromFeesToPool(amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-      this.setState({ loading: false })
-      })
-    }
-
-  withdrawTetherFromFees = (amount) => {
-    this.setState({ loading: true })
-    this.state.depositWallet.methods.withdrawTetherFromFees(amount).send({ from: this.state.account }).on('transactionHash', (hash) => {
-      this.setState({ loading: false })
-
-      })
-    
-    }
   
   
   constructor(props) {
     super(props)
     this.state = {
       account: '',
-      tetherToken: {},
-      peceiptToken: {},
-      depositWallet: {},
-      tetherTokenBalance: '0',
-      peceiptTokenBalance: '0',
-      tetherTokenInContract: '0',
-      mUSDTpool:'0',
-      mUSDTfees:'0',
+      uniToken: {},
+      purseTokenUpgradable: {},
+      restakingFarm: {},
+      uniTokenBalance: '0',
+      purseTokenUpgradableBalance: '0',
+      uniTokenInContract: '0',
+      purseTokenUpgradableInContract: '0',
+      userInfo:'0',
+      poolInfo:'0',
       PFXincirculation:'0',
-      mUSDTtoPFX:'0',
-      PFXtomUSDT:'0',
-      stakingFee:'0',
+      pursePerBlock:'0',
+      startBlock:'0',
       loading: true,
 
     }
@@ -168,8 +141,8 @@ class App extends Component {
 
   render() {
     let maincontent
-    let stakecontent
-    let unstakecontent
+    let depositcontent
+    let withdrawcontent
     let ownercontent
     if(this.state.loading) {
       maincontent =
@@ -179,7 +152,7 @@ class App extends Component {
         <div class="text">ETHEREUM IS A LITTLE SLOW...</div>
       </div>
     </div>
-      stakecontent =
+      depositcontent =
       <div class="wrap">
       <div class="loading">
         <div class="bounceball"></div>
@@ -188,58 +161,52 @@ class App extends Component {
     </div>
     } else {
       maincontent = <Main
-        tetherTokenBalance={this.state.tetherTokenBalance}
-        peceiptTokenBalance={this.state.peceiptTokenBalance}
-        stakeTokens={this.stakeTokens}
-        unstakeTokens={this.unstakeTokens}
-        tetherTokenInContract={this.state.tetherTokenInContract}
-        mUSDTpool={this.state.mUSDTpool}
-        mUSDTfees={this.state.mUSDTfees}
-        PFXincirculation={this.state.PFXincirculation}
-        mUSDTtoPFX={this.state.mUSDTtoPFX}
-        PFXtomUSDT={this.state.PFXtomUSDT}
-        stakingFee={this.state.stakingFee}
+        uniTokenBalance={this.state.uniTokenBalance}
+        purseTokenUpgradableBalance={this.state.purseTokenUpgradableBalance}
+        deposit={this.deposit}
+        withdraw={this.withdraw}
+        uniTokenInContract={this.state.uniTokenInContract}
+        purseTokenUpgradableInContract={this.state.purseTokenUpgradableInContract}
+        userInfo={this.state.userInfo}
+        poolInfo={this.state.poolInfo}
+        pursePerBlock={this.state.pursePerBlock}
+        startBlock={this.state.startBlock}
       />
-        stakecontent = <Stake
-        tetherTokenBalance={this.state.tetherTokenBalance}
-        peceiptTokenBalance={this.state.peceiptTokenBalance}
-        stakeTokens={this.stakeTokens}
-        unstakeTokens={this.unstakeTokens}
-        tetherTokenInContract={this.state.tetherTokenInContract}
-        mUSDTpool={this.state.mUSDTpool}
-        mUSDTfees={this.state.mUSDTfees}
-        PFXincirculation={this.state.PFXincirculation}
-        mUSDTtoPFX={this.state.mUSDTtoPFX}
-        PFXtomUSDT={this.state.PFXtomUSDT}
-        stakingFee={this.state.stakingFee}
+      depositcontent = <Deposit
+        uniTokenBalance={this.state.uniTokenBalance}
+        purseTokenUpgradableBalance={this.state.purseTokenUpgradableBalance}
+        deposit={this.deposit}
+        withdraw={this.withdraw}
+        uniTokenInContract={this.state.uniTokenInContract}
+        purseTokenUpgradableInContract={this.state.purseTokenUpgradableInContract}
+        userInfo={this.state.userInfo}
+        poolInfo={this.state.poolInfo}
+        pursePerBlock={this.state.pursePerBlock}
+        startBlock={this.state.startBlock}
       />
-        unstakecontent = <Unstake
-        tetherTokenBalance={this.state.tetherTokenBalance}
-        peceiptTokenBalance={this.state.peceiptTokenBalance}
-        stakeTokens={this.stakeTokens}
-        unstakeTokens={this.unstakeTokens}
-        tetherTokenInContract={this.state.tetherTokenInContract}
-        mUSDTpool={this.state.mUSDTpool}
-        mUSDTfees={this.state.mUSDTfees}
-        PFXincirculation={this.state.PFXincirculation}
-        mUSDTtoPFX={this.state.mUSDTtoPFX}
-        PFXtomUSDT={this.state.PFXtomUSDT}
-        stakingFee={this.state.stakingFee}
+      withdrawcontent = <Withdraw
+        uniTokenBalance={this.state.uniTokenBalance}
+        purseTokenUpgradableBalance={this.state.purseTokenUpgradableBalance}
+        deposit={this.deposit}
+        withdraw={this.withdraw}
+        uniTokenInContract={this.state.uniTokenInContract}
+        purseTokenUpgradableInContract={this.state.purseTokenUpgradableInContract}
+        userInfo={this.state.userInfo}
+        poolInfo={this.state.poolInfo}
+        pursePerBlock={this.state.pursePerBlock}
+        startBlock={this.state.startBlock}
       />
-        ownercontent = <Owner
-        tetherTokenBalance={this.state.tetherTokenBalance}
-        peceiptTokenBalance={this.state.peceiptTokenBalance}
-        withdrawTetherFromPool={this.withdrawTetherFromPool}
-        addTetherToPool={this.addTetherToPool}
-        transferTetherFromFeesToPool={this.transferTetherFromFeesToPool}
-        withdrawTetherFromFees={this.withdrawTetherFromFees}
-        tetherTokenInContract={this.state.tetherTokenInContract}
-        mUSDTpool={this.state.mUSDTpool}
-        mUSDTfees={this.state.mUSDTfees}
-        PFXincirculation={this.state.PFXincirculation}
-        mUSDTtoPFX={this.state.mUSDTtoPFX}
-        PFXtomUSDT={this.state.PFXtomUSDT}
-        stakingFee={this.state.stakingFee}
+      ownercontent = <Owner
+        uniTokenBalance={this.state.uniTokenBalance}
+        purseTokenUpgradableBalance={this.state.purseTokenUpgradableBalance}
+        deposit={this.deposit}
+        withdraw={this.withdraw}
+        uniTokenInContract={this.state.uniTokenInContract}
+        purseTokenUpgradableInContract={this.state.purseTokenUpgradableInContract}
+        userInfo={this.state.userInfo}
+        poolInfo={this.state.poolInfo}
+        pursePerBlock={this.state.pursePerBlock}
+        startBlock={this.state.startBlock}
       />
 
 
@@ -266,8 +233,8 @@ class App extends Component {
                   <Switch>
                     {/* <Route path="/" exact > {content} </Route> */}
                     <Route path="/" exact > {maincontent} </Route>
-                    <Route path="/stake/" exact > {stakecontent} </Route>
-                    <Route path="/unstake/" exact > {unstakecontent} </Route>
+                    <Route path="/deposit/" exact > {depositcontent} </Route>
+                    <Route path="/withdraw/" exact > {withdrawcontent} </Route>
                     <Route path="/owner/" exact > {ownercontent} </Route>
                     {/* <Route path="/PRTokenDistribution/NPXSXEMigration/" exact > {content2} </Route>
                     <Route path="/PRTokenDistribution/PurseDistribution/" exact > {content3} </Route> */}

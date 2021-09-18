@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import dai from '../tether.png'
+import dai from '../uniswap-uni-logo.png'
 // import ButtonGroup from 'react-bootstrap/ButtonGroup'
 // import Button from '@material-ui/core/Button';
 

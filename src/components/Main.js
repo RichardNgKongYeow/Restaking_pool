@@ -13,17 +13,17 @@ class Main extends Component {
         <table className="table table-borderless text-muted text-center">
           <thead>
             <tr>
-              <th scope="col">Total Tether Staked In Pool</th>
-              <th scope="col">Total Receipt Token In Ciculation</th>
-              <th scope="col">Total Tether In Fees Pool</th>
+              <th scope="col">Total Uni Staked In Pool</th>
+              <th scope="col">Total Purse Pool</th>
+              <th scope="col">{window.web3.utils.fromWei(this.props.pursePerBlock, 'Ether')}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>{window.web3.utils.fromWei(this.props.mUSDTpool, 'Ether')} mUSDT</td>
-              <td>{window.web3.utils.fromWei(this.props.PFXincirculation, 'Ether')} PFX</td>
-              <td>{window.web3.utils.fromWei(this.props.mUSDTfees, 'Ether')} mUSDT</td>
-
+              <td>{window.web3.utils.fromWei(this.props.uniTokenInContract, 'Ether')} mUni</td>
+              <td>{window.web3.utils.fromWei(this.props.purseTokenUpgradableInContract, 'Ether')} Purse</td>
+              <td>Purse Per Block</td>
+              
 
             </tr>
           </tbody>
@@ -31,21 +31,22 @@ class Main extends Component {
         <table className="table table-borderless text-muted text-center">
           <thead>
             <tr>
-
-              <th scope="col">1 mUSDT = </th>
-              <th scope="col">1 PFX = </th>
-              <th scope="col">Staking Fee</th>
+              <th scope="col">Start Block</th>
+              <th scope="col">Last Reward Block</th>
+              <th scope="col">{(window.web3.utils.fromWei(this.props.poolInfo.accPursePerShare, 'Ether'))}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <td>{(this.props.startBlock)}</td>
+              <td>{this.props.poolInfo.lastRewardBlock}</td>
+              <td>APY</td>
               
-              <td>{window.web3.utils.fromWei(this.props.PFXtomUSDT, 'Ether')} PFX</td>
-              <td>{window.web3.utils.fromWei(this.props.mUSDTtoPFX, 'Ether')} mUSDT</td>
-              <td>{this.props.stakingFee} %</td>
+
             </tr>
           </tbody>
         </table>
+
 
               
       </div>

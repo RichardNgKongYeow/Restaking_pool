@@ -17134,14 +17134,72 @@
   },
   "networks": {
     "5777": {
-      "events": {},
+      "events": {
+        "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Deposit",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdraw",
+          "type": "event"
+        }
+      },
       "links": {},
-      "address": "0xd97Fa6C876ff87c5389a48CeDA964bC89cc01c0e",
-      "transactionHash": "0xe1bb44c0b9114d4b954d7f0c19475083b7cf5ab8435e45c9b429c3df8ac60fe5"
+      "address": "0x901441D48c8B65e6Ae7343Cd0e8e3DF01bFA6Df9",
+      "transactionHash": "0x5fa4951b13f615c05c99a8efe841fac56946e11e1eb0ff6f11f66c6599426599"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-09-17T04:01:40.201Z",
+  "updatedAt": "2021-09-17T08:33:22.228Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

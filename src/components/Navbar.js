@@ -24,13 +24,13 @@ class Navbar extends Component {
           rel="noopener noreferrer"
         >
           <img src={fx_token} width="30" height="30" className="d-inline-block align-top" alt="" />
-          &nbsp; Trading Wallet
+          &nbsp; Restaking Farm
         </a>
-        <NavBtnLink0 to='/Stake' activeStyle>
-                  Stake
+        <NavBtnLink0 to='/Deposit' activeStyle>
+              Deposit
               </NavBtnLink0>
-              <NavBtnLink1 to='/Unstake' activeStyle>
-                  Unstake
+              <NavBtnLink1 to='/Withdraw' activeStyle>
+                Withdraw
               </NavBtnLink1>
               <NavBtnLink2 to='/Owner' activeStyle>
                   Owner
