@@ -40,7 +40,8 @@ contract RestakingFarm is CheckContract, Ownable{
     UniToken public uniToken;
     // PURSE tokens created per block.
     uint256 public pursePerBlock;
-    uint256 public startBlock;
+    // uint uint256 public startBlock; 
+    uint256 public startBlock; 
     PoolInfo public poolInfo;
 
 
@@ -61,7 +62,6 @@ contract RestakingFarm is CheckContract, Ownable{
         uniToken = _uniToken;
         pursePerBlock = _pursePerBlock;
         startBlock = _startBlock;
-        
         // staking pool
         poolInfo.lastRewardBlock=startBlock;
         poolInfo.accPursePerShare=0;

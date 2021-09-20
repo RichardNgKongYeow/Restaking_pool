@@ -32,7 +32,7 @@ class Deposit extends Component {
 
               <td>{window.web3.utils.fromWei(this.props.purseTokenUpgradableBalance, 'Ether')}</td>
               <td>{window.web3.utils.fromWei(this.props.userInfo.amount, 'Ether')}</td>
-              <td>{window.web3.utils.fromWei(this.props.userInfo.amount, 'Ether')*(window.web3.utils.fromWei(this.props.poolInfo.accPursePerShare, 'Ether'))-(window.web3.utils.fromWei(this.props.userInfo.rewardDebt, 'Ether'))}</td>
+              <td>{1*10**6*window.web3.utils.fromWei(this.props.userInfo.amount, 'Ether')*(window.web3.utils.fromWei(this.props.poolInfo.accPursePerShare, 'Ether'))-(window.web3.utils.fromWei(this.props.userInfo.rewardDebt, 'Ether'))}</td>
 
             </tr>
           </tbody>
