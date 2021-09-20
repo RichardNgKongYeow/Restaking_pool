@@ -99,14 +99,14 @@ class Withdraw extends Component {
             <tr>
               <th scope="col">Start Block</th>
               <th scope="col">Last Reward Block</th>
-              <th scope="col">{(window.web3.utils.fromWei(this.props.poolInfo.accPursePerShare, 'Ether'))}</th>
+              <th scope="col">{1*10**6*(window.web3.utils.fromWei(this.props.poolInfo.accPursePerShare, 'Ether'))}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>{(this.props.startBlock)}</td>
               <td>{this.props.poolInfo.lastRewardBlock}</td>
-              <td>APY</td>
+              <td>Purse Per Share</td>
               
 
             </tr>
