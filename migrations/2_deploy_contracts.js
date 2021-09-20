@@ -16,7 +16,8 @@ module.exports = async function(deployer, network, accounts) {
     const purseToken = await PurseToken.deployed()
     await purseToken.initialize(accounts[0],accounts[0],accounts[0],10,5,5)
     // deploy RestakingFarm and pass in variables taken in in constructor ie the 2 token addresses and the 2 other variables
-    await deployer.deploy(RestakingFarm, purseToken.address, uniToken.address, 100000000000000000000n, 983)
+
+    await deployer.deploy(RestakingFarm, purseToken.address, uniToken.address, 100000000000000000000n, 1060)
     const restakingFarm = await RestakingFarm.deployed()
     await purseToken.addAdmin(restakingFarm.address)
     
